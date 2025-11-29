@@ -1,19 +1,31 @@
 {
   "events": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Tech Talk",
       "description": "A session on new technologies",
       "date": "2025-12-01",
       "venue": "Auditorium",
-      "participants": []
+      "participants": [
+        "sk14@gmail.com"
+      ]
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "Sports Meet",
       "description": "Register for inter-college sports events",
       "date": "2025-12-05",
       "venue": "Ground",
+      "participants": [
+        "ssk@gmail.com"
+      ]
+    },
+    {
+      "id": "434d",
+      "title": "Gamers ",
+      "description": "play games and win prizes",
+      "date": "30-11-2025",
+      "venue": "c block",
       "participants": []
     }
   ]

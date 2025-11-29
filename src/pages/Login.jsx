@@ -1,46 +1,81 @@
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-
-const schema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email is required")
-});
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    resolver: yupResolver(schema)
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = (data) => {
-    login(data.email);
-    navigate("/dashboard");
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    login(email); // simple mock login
+    navigate("/");
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center neon-bg">
+      <div className="glass-card w-full max-w-md p-8 fade-up">
+        <h2 className="text-3xl font-bold text-white mb-6 text-center">
+          Welcome Back
+        </h2>
 
-        <div>
-          <label>Email</label>
-          <input
-            {...register("email")}
-            className="w-full p-2 border rounded mt-1"
-          />
-          <p className="text-red-600 text-sm">{errors.email?.message}</p>
-        </div>
+        {error && (
+          <div className="bg-red-500/20 text-red-300 px-3 py-2 rounded mb-3">
+            {error}
+          </div>
+        )}
 
-        <button className="w-full bg-blue-600 text-white p-2 rounded">Login</button>
-      </form>
+        <form onSubmit={handleLogin} className="space-y-5">
+          {/* EMAIL */}
+          <div className="relative">
+            <input
+              type="email"
+              className="input-field"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div className="relative">
+            <input
+              type={showPass ? "text" : "password"}
+              className="input-field"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span
+              onClick={() => setShowPass(!showPass)}
+              className="absolute right-3 top-3 text-white/70 cursor-pointer"
+            >
+              {showPass ? "🙈" : "👁️"}
+            </span>
+          </div>
+
+          {/* SUBMIT */}
+          <button className="btn-primary w-full py-3 text-lg">Login</button>
+        </form>
+
+        <p className="text-white/70 text-center mt-6">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-cyan-300 underline">
+            Create one
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,39 +1,62 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
-  });
+export const AuthProvider = ({ children }) => {
+  // USER DATA (from login)
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user")) || null
+  );
 
+  // REGISTERED EVENTS
+  const [registeredEvents, setRegisteredEvents] = useState(
+    JSON.parse(localStorage.getItem("registeredEvents")) || []
+  );
+
+  // SAVE USER TO LOCAL STORAGE
   useEffect(() => {
-    if (user) localStorage.setItem("user", JSON.stringify(user));
-    else localStorage.removeItem("user");
+    localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
-  const login = (email) => {
-    const name = email.split("@")[0];
-    const role = email.includes("admin") ? "admin" : "student";
-    setUser({ email, name, role });
+  // SAVE REGISTERED EVENTS TO LOCAL STORAGE
+  useEffect(() => {
+    localStorage.setItem("registeredEvents", JSON.stringify(registeredEvents));
+  }, [registeredEvents]);
+
+  // LOGIN FUNCTION (mock login)
+  const login = (email, password) => {
+    const loggedUser = { email };
+    setUser(loggedUser);
   };
 
-  const register = (email, name) => {
-    setUser({ email, name, role: "student" });
-  };
-
+  // LOGOUT FUNCTION
   const logout = () => {
     setUser(null);
+    setRegisteredEvents([]);
+    localStorage.removeItem("user");
+    localStorage.removeItem("registeredEvents");
+  };
+
+  // REGISTER FOR EVENT FUNCTION
+  const registerEvent = (event) => {
+    if (!registeredEvents.find((e) => e.id === event.id)) {
+      setRegisteredEvents([...registeredEvents, event]);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        registeredEvents,
+        registerEvent,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

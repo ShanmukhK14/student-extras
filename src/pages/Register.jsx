@@ -1,50 +1,97 @@
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-
-const schema = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  email: yup.string().email("Invalid email").required("Email is required")
-});
 
 export default function Register() {
-  const { register: registerUser } = useAuth();
+  const { login } = useAuth(); 
   const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    resolver: yupResolver(schema)
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = (data) => {
-    registerUser(data.email, data.name);
-    navigate("/dashboard");
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    if (!email || !password || !confirm) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    login(email); // mock register-login
+    navigate("/");
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Register</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center neon-bg">
+      <div className="glass-card w-full max-w-md p-8 fade-up">
+        <h2 className="text-3xl font-bold text-white mb-6 text-center">
+          Create Your Account
+        </h2>
 
-        <div>
-          <label>Name</label>
-          <input {...register("name")} className="w-full p-2 border rounded mt-1" />
-          <p className="text-red-600 text-sm">{errors.name?.message}</p>
-        </div>
+        {error && (
+          <div className="bg-red-500/20 text-red-300 px-3 py-2 rounded mb-3">
+            {error}
+          </div>
+        )}
 
-        <div>
-          <label>Email</label>
-          <input {...register("email")} className="w-full p-2 border rounded mt-1" />
-          <p className="text-red-600 text-sm">{errors.email?.message}</p>
-        </div>
+        <form onSubmit={handleRegister} className="space-y-5">
+          {/* EMAIL */}
+          <input
+            type="email"
+            className="input-field"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <button className="w-full bg-green-600 text-white p-2 rounded">Register</button>
-      </form>
+          {/* PASSWORD */}
+          <div className="relative">
+            <input
+              type={showPass ? "text" : "password"}
+              className="input-field"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          {/* CONFIRM PASSWORD */}
+          <div className="relative">
+            <input
+              type={showPass ? "text" : "password"}
+              className="input-field"
+              placeholder="Confirm Password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+            <span
+              onClick={() => setShowPass(!showPass)}
+              className="absolute right-3 top-3 text-white/70 cursor-pointer"
+            >
+              {showPass ? "🙈" : "👁️"}
+            </span>
+          </div>
+
+          <button className="btn-primary w-full py-3 text-lg">
+            Register
+          </button>
+        </form>
+
+        <p className="text-white/70 text-center mt-6">
+          Already have an account?{" "}
+          <Link to="/login" className="text-cyan-300 underline">
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
