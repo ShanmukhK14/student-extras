@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "title": "Tech Talk",
+      "description": "A session on new technologies",
+      "date": "2025-12-01",
+      "venue": "Auditorium",
+      "participants": []
+    },
+    {
+      "id": 2,
+      "title": "Sports Meet",
+      "description": "Register for inter-college sports events",
+      "date": "2025-12-05",
+      "venue": "Ground",
+      "participants": []
+    }
+  ]
+}
